@@ -24,11 +24,11 @@
     },
     "host": {
       "cors": {
-  "origins": [
-    "http://localhost:8080"
-  ],
-  "allow-credentials": false
-},
+        "origins": [
+          "http://localhost:8080"
+        ],
+        "allow-credentials": false
+      },
       "authentication": {
         "provider": "Unauthenticated"
       },
@@ -125,4 +125,3 @@
     }
   }
 }
-

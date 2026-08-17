@@ -1,38 +1,56 @@
-CREATE TABLE Users (
-    UserID INT IDENTITY(1,1) PRIMARY KEY,
-    FullName NVARCHAR(100) NOT NULL,
-    Email NVARCHAR(150) NOT NULL UNIQUE,
+USE TaskManagement;
+GO
+
+IF OBJECT_ID('dbo.Comments', 'U') IS NOT NULL
+    DROP TABLE dbo.Comments;
+GO
+
+IF OBJECT_ID('dbo.Tasks', 'U') IS NOT NULL
+    DROP TABLE dbo.Tasks;
+GO
+
+IF OBJECT_ID('dbo.Users', 'U') IS NOT NULL
+    DROP TABLE dbo.Users;
+GO
+
+CREATE TABLE dbo.Users
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(255) NOT NULL UNIQUE,
     CreatedAt DATETIME2 DEFAULT GETUTCDATE()
 );
+GO
 
-CREATE TABLE Categories (
-    CategoryID INT IDENTITY(1,1) PRIMARY KEY,
-    CategoryName NVARCHAR(100) NOT NULL UNIQUE,
-    Description NVARCHAR(255)
-);
-
-CREATE TABLE Tasks (
-    TaskID INT IDENTITY(1,1) PRIMARY KEY,
+CREATE TABLE dbo.Tasks
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId INT NOT NULL,
     Title NVARCHAR(200) NOT NULL,
-    Description NVARCHAR(1000),
-    Status NVARCHAR(30) NOT NULL DEFAULT 'Pending',
-    Priority NVARCHAR(20) NOT NULL DEFAULT 'Medium',
-    DueDate DATE,
-    UserID INT NOT NULL,
-    CategoryID INT NOT NULL,
+    Description NVARCHAR(MAX),
+    Status NVARCHAR(50) DEFAULT 'Pending',
     CreatedAt DATETIME2 DEFAULT GETUTCDATE(),
 
     CONSTRAINT FK_Tasks_Users
-        FOREIGN KEY (UserID)
-        REFERENCES Users(UserID),
-
-    CONSTRAINT FK_Tasks_Categories
-        FOREIGN KEY (CategoryID)
-        REFERENCES Categories(CategoryID),
-
-    CONSTRAINT CK_Tasks_Status
-        CHECK (Status IN ('Pending', 'In Progress', 'Completed')),
-
-    CONSTRAINT CK_Tasks_Priority
-        CHECK (Priority IN ('Low', 'Medium', 'High'))
+        FOREIGN KEY (UserId)
+        REFERENCES dbo.Users(Id)
 );
+GO
+
+CREATE TABLE dbo.Comments
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    TaskId INT NOT NULL,
+    UserId INT NOT NULL,
+    CommentText NVARCHAR(MAX) NOT NULL,
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE(),
+
+    CONSTRAINT FK_Comments_Tasks
+        FOREIGN KEY (TaskId)
+        REFERENCES dbo.Tasks(Id),
+
+    CONSTRAINT FK_Comments_Users
+        FOREIGN KEY (UserId)
+        REFERENCES dbo.Users(Id)
+);
+GO

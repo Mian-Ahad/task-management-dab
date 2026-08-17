@@ -1,0 +1,129 @@
+services:
+
+  task-management-sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: task-management-sql
+
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "YourStrongPassword123!"
+
+    ports:
+      - "1433:1433"
+
+    networks:
+      - task-management-network
+
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'YourStrongPassword123!' -C -Q 'SELECT 1' || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+
+  task-management-db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: task-management-db-init
+
+    depends_on:
+      task-management-sql:
+        condition: service_healthy
+
+    networks:
+      - task-management-network
+
+    volumes:
+      - ./database:/database:ro
+
+    entrypoint:
+      - /bin/bash
+      - -c
+
+    command:
+      - |
+        echo "Checking TaskManagement database..."
+
+        /opt/mssql-tools18/bin/sqlcmd \
+          -S task-management-sql \
+          -U sa \
+          -P 'YourStrongPassword123!' \
+          -C \
+          -Q "IF DB_ID('TaskManagement') IS NULL CREATE DATABASE TaskManagement"
+
+        TABLE_EXISTS=$$(/opt/mssql-tools18/bin/sqlcmd \
+          -S task-management-sql \
+          -U sa \
+          -P 'YourStrongPassword123!' \
+          -C \
+          -d TaskManagement \
+          -h -1 \
+          -W \
+          -Q "SET NOCOUNT ON; SELECT CASE WHEN OBJECT_ID('dbo.Users','U') IS NULL THEN 0 ELSE 1 END")
+
+        if [ "$$TABLE_EXISTS" = "0" ]; then
+          echo "Initializing database schema..."
+
+          /opt/mssql-tools18/bin/sqlcmd \
+            -S task-management-sql \
+            -U sa \
+            -P 'YourStrongPassword123!' \
+            -C \
+            -d TaskManagement \
+            -i /database/schema.sql
+
+          echo "Loading seed data..."
+
+          /opt/mssql-tools18/bin/sqlcmd \
+            -S task-management-sql \
+            -U sa \
+            -P 'YourStrongPassword123!' \
+            -C \
+            -d TaskManagement \
+            -i /database/seed.sql
+
+          echo "Database initialization completed."
+        else
+          echo "Database already initialized. Skipping schema and seed."
+        fi
+
+
+  task-management-dab:
+    image: task-management-dab:1.0
+    container_name: task-management-dab
+
+    depends_on:
+      task-management-sql:
+        condition: service_healthy
+      task-management-db-init:
+        condition: service_completed_successfully
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      SQL_CONNECTION_STRING: "Server=task-management-sql;Database=TaskManagement;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;"
+
+    networks:
+      - task-management-network
+
+    command:
+      - start
+      - --config
+      - /App/dab-config.json
+
+
+networks:
+  task-management-network:
+    driver: bridge
+
+
+volumes:
+  sqlserver-data:

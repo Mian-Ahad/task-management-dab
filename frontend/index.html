@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">✓</div>
+            <div>
+                <h2>TaskFlow</h2>
+                <span>Management System</span>
+            </div>
+        </div>
+
+        <nav>
+            <button class="nav-item active" data-section="dashboard">
+                <span>▦</span> Dashboard
+            </button>
+
+            <button class="nav-item" data-section="tasks">
+                <span>✓</span> Tasks
+            </button>
+
+            <button class="nav-item" data-section="users">
+                <span>♙</span> Users
+            </button>
+
+            <button class="nav-item" data-section="comments">
+                <span>☷</span> Comments
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <span>Task Management DAB</span>
+            <small>Azure Data API Builder</small>
+        </div>
+    </aside>
+
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1 id="page-title">Dashboard</h1>
+                <p>Manage your tasks and team efficiently.</p>
+            </div>
+
+            <button class="refresh-btn" onclick="loadAllData()">
+                ↻ Refresh
+            </button>
+        </header>
+
+
+        <!-- DASHBOARD -->
+
+        <section id="dashboard-section" class="section active">
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon total">✓</div>
+                    <div>
+                        <span>Total Tasks</span>
+                        <strong id="total-tasks">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon pending">◷</div>
+                    <div>
+                        <span>Pending</span>
+                        <strong id="pending-tasks">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon progress">↻</div>
+                    <div>
+                        <span>In Progress</span>
+                        <strong id="progress-tasks">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon completed">✓</div>
+                    <div>
+                        <span>Completed</span>
+                        <strong id="completed-tasks">0</strong>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-grid">
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Recent Tasks</h2>
+                            <p>Latest tasks in the system</p>
+                        </div>
+
+                        <button class="primary-btn" onclick="showSection('tasks')">
+                            View All
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Task</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="recent-tasks"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>System Overview</h2>
+                            <p>Current database information</p>
+                        </div>
+                    </div>
+
+                    <div class="overview">
+
+                        <div class="overview-item">
+                            <span>Users</span>
+                            <strong id="overview-users">0</strong>
+                        </div>
+
+                        <div class="overview-item">
+                            <span>Tasks</span>
+                            <strong id="overview-tasks">0</strong>
+                        </div>
+
+                        <div class="overview-item">
+                            <span>Comments</span>
+                            <strong id="overview-comments">0</strong>
+                        </div>
+
+                        <div class="overview-item">
+                            <span>API Status</span>
+                            <strong class="online">● Online</strong>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TASKS -->
+
+        <section id="tasks-section" class="section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Task Management</h2>
+                    <p>Create, search and manage tasks.</p>
+                </div>
+
+                <button class="primary-btn" onclick="openTaskModal()">
+                    + Add Task
+                </button>
+            </div>
+
+
+            <div class="toolbar">
+
+                <input
+                    type="text"
+                    id="task-search"
+                    placeholder="Search tasks..."
+                    oninput="filterTasks()"
+                >
+
+                <select id="status-filter" onchange="filterTasks()">
+                    <option value="">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+
+                <button class="secondary-btn" onclick="loadTasks()">
+                    Refresh
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>User</th>
+                                <th>Status</th>
+                                <th>Description</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tasks-table"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- USERS -->
+
+        <section id="users-section" class="section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>User Management</h2>
+                    <p>Manage system users.</p>
+                </div>
+
+                <button class="primary-btn" onclick="openUserModal()">
+                    + Add User
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="users-table"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- COMMENTS -->
+
+        <section id="comments-section" class="section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Comments</h2>
+                    <p>Task discussion and activity.</p>
+                </div>
+
+                <button class="primary-btn" onclick="openCommentModal()">
+                    + Add Comment
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Task ID</th>
+                                <th>User ID</th>
+                                <th>Comment</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="comments-table"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- TASK MODAL -->
+
+<div class="modal" id="task-modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2 id="task-modal-title">Add Task</h2>
+            <button onclick="closeModal('task-modal')">×</button>
+        </div>
+
+        <form id="task-form">
+
+            <input type="hidden" id="task-id">
+
+            <label>Title</label>
+            <input id="task-title" required>
+
+            <label>Description</label>
+            <textarea id="task-description"></textarea>
+
+            <label>Status</label>
+            <select id="task-status">
+                <option>Pending</option>
+                <option>In Progress</option>
+                <option>Completed</option>
+            </select>
+
+            <label>User ID</label>
+            <input type="number" id="task-user-id" value="1" min="1" required>
+
+            <div class="form-actions">
+                <button type="button" class="secondary-btn"
+                        onclick="closeModal('task-modal')">
+                    Cancel
+                </button>
+
+                <button type="submit" class="primary-btn">
+                    Save Task
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- USER MODAL -->
+
+<div class="modal" id="user-modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Add User</h2>
+            <button onclick="closeModal('user-modal')">×</button>
+        </div>
+
+        <form id="user-form">
+
+            <label>Name</label>
+            <input id="user-name" required>
+
+            <label>Email</label>
+            <input type="email" id="user-email" required>
+
+            <div class="form-actions">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeModal('user-modal')">
+                    Cancel
+                </button>
+
+                <button type="submit" class="primary-btn">
+                    Create User
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- COMMENT MODAL -->
+
+<div class="modal" id="comment-modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Add Comment</h2>
+            <button onclick="closeModal('comment-modal')">×</button>
+        </div>
+
+        <form id="comment-form">
+
+            <label>Task ID</label>
+            <input type="number" id="comment-task-id" value="1" min="1" required>
+
+            <label>User ID</label>
+            <input type="number" id="comment-user-id" value="1" min="1" required>
+
+            <label>Comment</label>
+            <textarea id="comment-text" required></textarea>
+
+            <div class="form-actions">
+
+                <button type="button"
+                        class="secondary-btn"
+                        onclick="closeModal('comment-modal')">
+                    Cancel
+                </button>
+
+                <button type="submit" class="primary-btn">
+                    Add Comment
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<div id="toast"></div>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
