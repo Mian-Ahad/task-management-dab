@@ -1,0 +1,6 @@
+.env
+*.env
+appsettings.json
+bin/
+obj/
+.vscode/
