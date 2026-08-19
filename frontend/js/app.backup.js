@@ -1,4 +1,4 @@
-const API = "https://task-management-dab.orangeriver-39fedb85.uaenorth.azurecontainerapps.io/api";
+const API = "http://localhost:5000/api";
 
 let tasks = [];
 let users = [];

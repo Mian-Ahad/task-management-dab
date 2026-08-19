@@ -1,0 +1,16 @@
+﻿{
+    "api":  {
+                "oauth2PermissionScopes":  [
+                                               {
+                                                   "id":  "4c1dc09e-5c69-4912-8ac1-42ddb4b2b057",
+                                                   "userConsentDescription":  "Allow this application to access the Task Management DAB API on your behalf.",
+                                                   "adminConsentDescription":  "Allow the signed-in user to access the Task Management DAB API.",
+                                                   "type":  "User",
+                                                   "value":  "access_as_user",
+                                                   "isEnabled":  true,
+                                                   "userConsentDisplayName":  "Access Task Management DAB API",
+                                                   "adminConsentDisplayName":  "Access Task Management DAB API"
+                                               }
+                                           ]
+            }
+}

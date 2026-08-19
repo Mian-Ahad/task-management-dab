@@ -65,7 +65,7 @@
       },
       "permissions": [
         {
-          "role": "anonymous",
+          "role": "TaskManagement.User",
           "actions": [
             {
               "action": "*"
@@ -92,7 +92,7 @@
       },
       "permissions": [
         {
-          "role": "anonymous",
+          "role": "TaskManagement.User",
           "actions": [
             {
               "action": "*"
@@ -119,7 +119,7 @@
       },
       "permissions": [
         {
-          "role": "anonymous",
+          "role": "TaskManagement.User",
           "actions": [
             {
               "action": "*"
