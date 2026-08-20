@@ -29,11 +29,12 @@
 
     "host": {
       "cors": {
-        "origins": [
-          "http://localhost:8080"
-        ],
-        "allow-credentials": false
-      },
+  "origins": [
+    "http://localhost:8080",
+    "https://task-management-frontend.orangeriver-39fedb85.uaenorth.azurecontainerapps.io"
+],
+  "allow-credentials": false
+},
 
       "authentication": {
         "provider": "EntraID",
